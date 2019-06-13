@@ -26,9 +26,7 @@ class Scheduler:
 	day: int < 14
 	"""
 	def schedule_day(self, day):
-		main = random.choice(self.chefs_main) # throwaway for now
-		side = random.choice(self.chefs_side) # throwaway for now
-
+		(main, side) = self.choose(day)
 		self.schedule[day] = (main, side)
 
 		for chef in self.chefs_main:
@@ -42,6 +40,18 @@ class Scheduler:
 				chef.cook(day)
 			else:
 				chef.dont_cook()
+
+	def choose(self, day) -> (Chef, Chef):
+		weights_m = list(map(lambda n: (n.since, n), self.chefs_main))
+		weights_m.sort(reverse=True, key=lambda x: x[0])
+		main = weights_m[0][1]
+
+		weights_s = list(map(lambda n: (n.since, n), self.chefs_side))
+		weights_s.sort(reverse=True, key=lambda x: x[0])
+		weights_s = list(filter(lambda n: n[1].name != main.name, weights_s))
+		side = weights_s[0][1]
+
+		return (main, side)
 
 	def day_of_week(self, day):
 		day = (day + 1) % 7
