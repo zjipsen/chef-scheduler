@@ -1,15 +1,21 @@
 from chef import Chef
 import random
+from collections import namedtuple
+
+w_chef = namedtuple('w_chef', 'since chef')
 
 class Scheduler:
+
 	def __init__(self):
 		self.chefs_main = []
 		self.chefs_side = []
-		self.schedule = [None]*14
+		self.schedule = [None] * Chef.days_in_week * 3
 		#self.last_week = []
 		#self.day_buffer = 4
 		#self.must_cook_days = 2
 		#self.cancelled = [] # list of days no one should cook; 1 = Monday, 2 = Tuesday, ... 7 = Sunday
+
+	# Public Methods ####################################################################
 
 	def add_chef(self, chef, main=True):
 		if (main):
@@ -17,16 +23,29 @@ class Scheduler:
 		else:
 			self.chefs_side.append(chef)
 
-	def schedule_fortnight(self):
+	def schedule_three_weeks(self):
 		for day, sched in enumerate(self.schedule):
-			self.schedule_day(day)
+			self._schedule_day(day)
+
+	def print_schedule(self):
+		print("\n      Main   | Side\n________________________")
+		for i, day in enumerate(self.schedule):
+			if (day):
+				print(self._day_of_week(i) + str(day[0]) + "|" + str(day[1]))
+			else:
+				print(self._day_of_week(i) + "Nobody cooks")
+			if (i % Chef.days_in_week == Chef.days_in_week - 1):
+				print("")
+		print("")
+
+	# Private Methods ###################################################################
 
 	"""
 	Schedule one day given the chefs, their availability and cooking record, and what day it is today.
 	day: int < 14
 	"""
-	def schedule_day(self, day):
-		(main, side) = self.choose(day)
+	def _schedule_day(self, day):
+		(main, side) = self._choose(day)
 		self.schedule[day] = (main, side)
 
 		for chef in self.chefs_main:
@@ -41,20 +60,25 @@ class Scheduler:
 			else:
 				chef.dont_cook()
 
-	def choose(self, day) -> (Chef, Chef):
-		weights_m = list(map(lambda n: (n.since, n), self.chefs_main))
-		weights_m.sort(reverse=True, key=lambda x: x[0])
-		main = weights_m[0][1]
+	def _get_sorted_map(self, list_of_chefs):
+		get_tuple = lambda chef: w_chef(chef.since, chef)
+		weights_s = list(map(get_tuple, list_of_chefs))
+		weights_s.sort(reverse=True, key=lambda tup: tup.since)
+		return weights_s
 
-		weights_s = list(map(lambda n: (n.since, n), self.chefs_side))
-		weights_s.sort(reverse=True, key=lambda x: x[0])
-		weights_s = list(filter(lambda n: n[1].name != main.name, weights_s))
-		side = weights_s[0][1]
+
+	def _choose(self, day):
+		weights_m = self._get_sorted_map(self.chefs_main)
+		main = weights_m[0].chef
+
+		weights_s = self._get_sorted_map(self.chefs_side)
+		weights_s = list(filter(lambda weight_chef: weight_chef.chef.name != main.name, weights_s))
+		side = weights_s[0].chef
 
 		return (main, side)
 
-	def day_of_week(self, day):
-		day = (day + 1) % 7
+	def _day_of_week(self, day):
+		day = (day) % Chef.days_in_week
 		name = ""
 		if (day == 0):
 			name = "Sun"
@@ -66,22 +90,12 @@ class Scheduler:
 			name = "Wed"
 		if (day == 4):
 			name = "Thu"
-		if (day == 5):
-			name = "Fri"
-		if (day == 6):
-			name = "Sat"
+		# if (day == 5):
+		# 	name = "Fri"
+		# if (day == 6):
+		# 	name = "Sat"
 		return name + ": "
 
-	def print_schedule(self):
-		print("\n      Main   | Side\n_____________")
-		for i, day in enumerate(self.schedule):
-			if (day):
-				print(self.day_of_week(i) + str(day[0]) + "|" + str(day[1]))
-			else:
-				print(self.day_of_week(i) + "Nobody cooks")
-			if (i == 6):
-				print(" ")	
-		print("\n")
 	"""
 	def next_week(self):
 		pass

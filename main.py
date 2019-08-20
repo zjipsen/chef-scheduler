@@ -8,6 +8,7 @@ def add_the_squad(scheduler):
 	scheduler.add_chef(Chef("Zana"))
 	scheduler.add_chef(Chef("Alex"))
 	scheduler.add_chef(Chef("Adam"))
+	scheduler.add_chef(Chef("Maddy"))
 
 	scheduler.add_chef(Chef("Austin"), False)
 	scheduler.add_chef(Chef("Alex"), False)
@@ -15,11 +16,12 @@ def add_the_squad(scheduler):
 	scheduler.add_chef(Chef("John"), False)
 	scheduler.add_chef(Chef("Adam"), False)
 	scheduler.add_chef(Chef("Steph"), False)
+	scheduler.add_chef(Chef("Maddy"), False)
 
 def main():
 	scheduler = Scheduler()
 	add_the_squad(scheduler)
-	scheduler.schedule_fortnight()
+	scheduler.schedule_three_weeks()
 	scheduler.print_schedule()
 
 

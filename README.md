@@ -11,10 +11,9 @@ Current behavior:
 Pick at random.
 
 Future plans:
-1. Don't assign someone both a main and a side on the same day
-2. Assign weights 
+1. (DONE) Don't assign someone both a main and a side on the same day
+2. (DONE) Assign weights 
 3. Obey limited schedules
 4. Obey constraints: 4 day cooking buffer, but must cook twice in a 2 week period
 5. Maintain history and refer back
 6. Add tests for fairness
-7. Incorporate Wednesday (rotating trash food night)?

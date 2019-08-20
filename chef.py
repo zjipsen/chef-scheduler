@@ -1,5 +1,7 @@
 class Chef: 
-    def __init__(self, name, schedule=[1]*14):
+    days_in_week = 5
+
+    def __init__(self, name, schedule=[1]*days_in_week):
         self.name = name
         self.schedule = schedule
         self.since = 0
@@ -7,7 +9,7 @@ class Chef:
 
     def cook(self, day):
         self.since = 0
-        self.times = self.times + 1
+        self.times += 1
         if (self.times == 2):
             self.make_unavailable_from(day)
 
@@ -17,7 +19,7 @@ class Chef:
             day = day + 1
 
     def dont_cook(self):
-        self.since = self.since + 1
+        self.since += 1
 
     """
     def swap_nights(self, otherChef):
