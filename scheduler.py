@@ -66,6 +66,9 @@ class Scheduler:
 		get_tuple = lambda chef: w_chef(chef.since, chef)
 		weights_s = list(map(get_tuple, list_of_chefs))
 		weights_s.sort(reverse=True, key=lambda tup: tup.since)
+		for w_c in weights_s:
+			print("since: %s, chef: %s" % (w_c.since, w_c.chef))
+		print("")
 		return weights_s
 
 	def _find_available_chef(self, sorted_chefs, day):
@@ -104,6 +107,9 @@ class Scheduler:
 		# if (day == 6):
 		# 	name = "Sat"
 		return name + ": "
+
+	def _is_fair(self):
+		pass
 
 	"""
 	def next_week(self):
