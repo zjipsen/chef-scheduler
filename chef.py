@@ -1,9 +1,17 @@
+class Const:
+    SUN = 0
+    MON = 1
+    TUES = 2
+    WED = 3
+    THURS = 4
+    DAYS = [SUN, MON, TUES, WED, THURS]
+
 class Chef: 
     days_in_week = 5
 
-    def __init__(self, name, schedule=[1]*days_in_week):
+    def __init__(self, name, unavailable=[]):
         self.name = name
-        self.schedule = schedule
+        self.unavailable = unavailable
         self.since = 0
         self.times = 0
 
@@ -14,8 +22,8 @@ class Chef:
             self.make_unavailable_from(day)
 
     def make_unavailable_from(self, day):
-        while (day < len(self.schedule)):
-            self.schedule[day] = 0
+        while (day < len(self.unavailable)):
+            self.unavailable[day] = 0
             day = day + 1
 
     def dont_cook(self):

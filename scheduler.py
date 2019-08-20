@@ -49,16 +49,18 @@ class Scheduler:
 		self.schedule[day] = (main, side)
 
 		for chef in self.chefs_main:
-			if (chef.name == main.name):
-				chef.cook(day)
-			else:
-				chef.dont_cook()
+			if main:
+				if (chef.name == main.name):
+					chef.cook(day)
+				else:
+					chef.dont_cook()
 
 		for chef in self.chefs_side:
-			if (chef.name == side.name):
-				chef.cook(day)
-			else:
-				chef.dont_cook()
+			if side:
+				if (chef.name == side.name):
+					chef.cook(day)
+				else:
+					chef.dont_cook()
 
 	def _get_sorted_map(self, list_of_chefs):
 		get_tuple = lambda chef: w_chef(chef.since, chef)
@@ -66,14 +68,21 @@ class Scheduler:
 		weights_s.sort(reverse=True, key=lambda tup: tup.since)
 		return weights_s
 
+	def _find_available_chef(self, sorted_chefs, day):
+		# sorted_chefs: a reverse-sorted list of w_chef objects (chef.since, chef)
+		current_day = day % Chef.days_in_week
+		for (since, chef) in sorted_chefs:
+			if current_day not in chef.unavailable:
+				return chef
+		return None
 
 	def _choose(self, day):
 		weights_m = self._get_sorted_map(self.chefs_main)
-		main = weights_m[0].chef
+		main = self._find_available_chef(weights_m, day)
 
 		weights_s = self._get_sorted_map(self.chefs_side)
 		weights_s = list(filter(lambda weight_chef: weight_chef.chef.name != main.name, weights_s))
-		side = weights_s[0].chef
+		side = self._find_available_chef(weights_s, day)
 
 		return (main, side)
 
