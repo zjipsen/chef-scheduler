@@ -67,8 +67,9 @@ class Scheduler:
 		weights_s = list(map(get_tuple, list_of_chefs))
 		weights_s.sort(reverse=True, key=lambda tup: tup.since)
 		for w_c in weights_s:
-			print("since: %s, chef: %s" % (w_c.since, w_c.chef))
-		print("")
+			pass
+			# print("since: %s, chef: %s" % (w_c.since, w_c.chef))
+		# print("")
 		return weights_s
 
 	def _find_available_chef(self, sorted_chefs, day):
