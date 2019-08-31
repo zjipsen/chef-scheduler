@@ -16,7 +16,7 @@ class Chef:
         self.times = 0
 
     def cook(self, day):
-        self.since = 0
+        self.since = max(self.since - 6, 0)
         self.times += 1
         if (self.times == 2):
             self.make_unavailable_from(day)
@@ -42,3 +42,6 @@ class Chef:
 
     def padding_to_six(self):
         return " " * (6 - len(self.name) + 1)
+
+
+        

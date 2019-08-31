@@ -2,27 +2,39 @@ from chef import Chef, Const
 from scheduler import Scheduler
 
 def add_the_squad(scheduler):
-	scheduler.add_chef(Chef("John", [Const.TUES]))
-	scheduler.add_chef(Chef("Austin", [Const.MON]))
-	scheduler.add_chef(Chef("Steph"))
-	scheduler.add_chef(Chef("Zana", [Const.WED]))
-	scheduler.add_chef(Chef("Alex", [Const.MON, Const.TUES]))
-	scheduler.add_chef(Chef("Adam"))
-	scheduler.add_chef(Chef("Maddy", [Const.MON, Const.TUES]))
+	main_chefs = [
+	Chef("Alex", [Const.MON, Const.TUES]),
+	Chef("Maddy", [Const.MON, Const.TUES]),
+	Chef("Austin", [Const.MON]),
+	Chef("John", [Const.TUES]),
+	Chef("Zana", [Const.WED]),
+	Chef("Steph"),
+	Chef("Adam")
+	]
 
-	scheduler.add_chef(Chef("Austin", [Const.MON]), False)
-	scheduler.add_chef(Chef("Alex", [Const.MON]), False)
-	scheduler.add_chef(Chef("Zana", [Const.WED]), False)
-	scheduler.add_chef(Chef("John", [Const.TUES]), False)
-	scheduler.add_chef(Chef("Adam"), False)
-	scheduler.add_chef(Chef("Steph"), False)
-	scheduler.add_chef(Chef("Maddy", [Const.MON, Const.TUES]), False)
+	for chef in main_chefs:
+		scheduler.add_chef(chef)
+
+	side_chefs = [
+	Chef("Alex", [Const.MON, Const.TUES]),
+	Chef("Maddy", [Const.MON, Const.TUES]),
+	Chef("Austin", [Const.MON]),
+	Chef("John", [Const.TUES]),
+	Chef("Zana", [Const.WED]),
+	Chef("Adam"),
+	Chef("Steph")
+	]
+
+	for chef in side_chefs:
+		scheduler.add_chef(chef, False)
+
 
 def main():
 	scheduler = Scheduler()
 	add_the_squad(scheduler)
 	scheduler.schedule_three_weeks()
 	scheduler.print_schedule()
+	scheduler.print_fairness()
 
 
 if __name__ == '__main__':

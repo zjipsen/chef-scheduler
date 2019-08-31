@@ -9,11 +9,7 @@ class Scheduler:
 	def __init__(self):
 		self.chefs_main = []
 		self.chefs_side = []
-		self.schedule = [None] * Chef.days_in_week * 3
-		#self.last_week = []
-		#self.day_buffer = 4
-		#self.must_cook_days = 2
-		#self.cancelled = [] # list of days no one should cook; 1 = Monday, 2 = Tuesday, ... 7 = Sunday
+		self.schedule = [None] * 14
 
 	# Public Methods ####################################################################
 
@@ -37,6 +33,12 @@ class Scheduler:
 			if (i % Chef.days_in_week == Chef.days_in_week - 1):
 				print("")
 		print("")
+
+	def print_fairness(self):
+		(main_unfair, side_unfair) = self._is_fair()
+		print("\n_________________________________")
+		print("Main unfairness: " + str(main_unfair))
+		print("Side unfairness: " + str(side_unfair))
 
 	# Private Methods ###################################################################
 
@@ -110,12 +112,51 @@ class Scheduler:
 		return name + ": "
 
 	def _is_fair(self):
-		pass
+		main_dist = {}
+		side_dist = {}
+		week = -1
+		week_main = []
+		week_side = []
+		for (index, (main, side)) in enumerate(self.schedule):
+			main_dist[main] = 1 if main not in main_dist else main_dist[main] + 1
+			side_dist[side] = 1 if side not in side_dist else side_dist[side] + 1
 
-	"""
-	def next_week(self):
-		pass
-	"""
+			if index % Chef.days_in_week == 0:
+				week += 1
+				week_main.append({})
+				week_side.append({})
+
+			week_main[week][main] = 1 if main not in week_main[week] else week_main[week] + 1
+			week_side[week][side] = 1 if side not in week_side[week] else week_side[week] + 1
+
+
+		main_unfairness = 0 # unfairness rises when conditions are not met
+		side_unfairness = 0
+
+		for key in main_dist:
+			if main_dist[key] != 2:
+				main_unfairness += 1
+				print(key.name + "'s schedule is not fair. They cook a main " + str(main_dist[key]) + " times.")
+
+		for key in side_dist:
+			if side_dist[key] != 2: 
+				side_unfairness += 1
+				print(key.name + "'s schedule is not fair. They cook a side " + str(side_dist[key]) + " times.")
+
+		for i in range(week):
+			for key in week_main[i]:
+				if week_main[i][key] > 1:
+					main_unfairness += 1
+					print(key.name + "'s schedule is not fair. They cook a main " + str(week_main[i][key]) + " times in a week.")
+			for key in week_side[i]:
+				if week_side[i][key] > 1:
+					side_unfairness += 1
+					print(key.name + "'s schedule is not fair. They cook a side " + str(week_side[i][key]) + " times in a week.")
+
+
+
+		return (main_unfairness, side_unfairness)
+
 
 
 
