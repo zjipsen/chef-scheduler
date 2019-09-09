@@ -15,7 +15,9 @@ Future plans:
 2. (DONE) Assign weights 
 3. (DONE) Obey limited schedules
 4. (DONE) Test for constraints: no more than 1x per week, no less than 2x in a 3 week period
-5. Maintain history and refer back
+5. (DONE) Manually set 'since' variable to add data from previous weeks
 6. (DONE) Add tests for fairness
 7. Send SMS via Nexmo API
-8. Take into account starting on a Thursday (or any other day)
+8. (DONE) Allow starting algorithm on a Thursday (or any other day)
+9. Two cooks that live in the same apartment shouldn’t cook on the same day
+10. Support people being gone on vacation

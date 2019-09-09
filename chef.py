@@ -15,16 +15,17 @@ class Chef:
         self.since = since
         self.times = times
 
-    def cook(self, day):
+    def cook(self):
         self.since = max(self.since - 6, 0)
         self.times += 1
-        if (self.times == 2):
-            self.make_unavailable_from(day)
+        # if (self.times == 2):
+        #     self.make_unavailable_from(day)
 
     def make_unavailable_from(self, day):
-        while (day < len(self.unavailable)):
-            self.unavailable[day] = 0
-            day = day + 1
+        pass
+        # while (day < len(self.unavailable)):
+        #     self.unavailable[day] = 0
+        #     day = day + 1
 
     def dont_cook(self):
         self.since += 1

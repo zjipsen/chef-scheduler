@@ -28,9 +28,8 @@ def add_the_squad(scheduler):
 	for chef in side_chefs:
 		scheduler.add_chef(chef, False)
 
-
 def main():
-	scheduler = Scheduler()
+	scheduler = Scheduler(start_day=Const.MON)
 	add_the_squad(scheduler)
 	scheduler.schedule_three_weeks()
 	scheduler.print_schedule()

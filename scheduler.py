@@ -6,10 +6,12 @@ w_chef = namedtuple('w_chef', 'since chef')
 
 class Scheduler:
 
-	def __init__(self):
+	def __init__(self, start_day=0, num_days=14):
 		self.chefs_main = []
 		self.chefs_side = []
-		self.schedule = [None] * 14
+		self.schedule = [None] * num_days
+		self.start_day = start_day
+		self.nobody = Chef("**Nobody**")
 
 	# Public Methods ####################################################################
 
@@ -25,20 +27,22 @@ class Scheduler:
 
 	def print_schedule(self):
 		print("\n      Main   | Side\n________________________")
-		for i, day in enumerate(self.schedule):
-			if (day):
-				print(self._day_of_week(i) + str(day[0]) + "|" + str(day[1]))
+		for i, schedule in enumerate(self.schedule):
+			actual_day = i + self.start_day
+
+			if (schedule):
+				print(self._day_of_week(actual_day) + str(schedule[0]) + "|" + str(schedule[1]))
 			else:
-				print(self._day_of_week(i) + "Nobody cooks")
-			if (i % Chef.days_in_week == Chef.days_in_week - 1):
+				print(self._day_of_week(actual_day) + "Nobody cooks")
+			if (actual_day % Chef.days_in_week == Chef.days_in_week - 1):
 				print("")
-		print("")
 
 	def print_fairness(self):
 		(main_unfair, side_unfair) = self._is_fair()
-		print("\n_________________________________")
+		print("_________________________________")
 		print("Main unfairness: " + str(main_unfair))
 		print("Side unfairness: " + str(side_unfair))
+		print("")
 
 	# Private Methods ###################################################################
 
@@ -47,37 +51,38 @@ class Scheduler:
 	day: int < 14
 	"""
 	def _schedule_day(self, day):
-		(main, side) = self._choose(day)
-		self.schedule[day] = (main, side)
+		actual_day = day + self.start_day
+		index = day
+
+		(main, side) = self._choose(actual_day)
+		self.schedule[index] = (main, side)
 
 		for chef in self.chefs_main:
 			if main:
 				if (chef.name == main.name):
-					chef.cook(day)
+					chef.cook()
 				else:
 					chef.dont_cook()
 
 		for chef in self.chefs_side:
 			if side:
 				if (chef.name == side.name):
-					chef.cook(day)
+					chef.cook()
 				else:
 					chef.dont_cook()
-		self._print_chef_stats(day)
+		#self._print_chef_stats(actual_day)
 
 	def _get_sorted_map(self, list_of_chefs):
 		get_tuple = lambda chef: w_chef(chef.since, chef)
 		weights_s = list(map(get_tuple, list_of_chefs))
 		weights_s.sort(reverse=True, key=lambda tup: tup.since)
-		for w_c in weights_s:
-			pass
 		return weights_s
 
 	def _find_available_chef(self, sorted_chefs, day):
 		# sorted_chefs: a reverse-sorted list of w_chef objects (chef.since, chef)
 		current_day = day % Chef.days_in_week
 		for (since, chef) in sorted_chefs:
-			if current_day not in chef.unavailable:
+			if current_day not in chef.unavailable and chef.times < 2:
 				return chef
 		return None
 
@@ -89,11 +94,16 @@ class Scheduler:
 		weights_s = list(filter(lambda weight_chef: weight_chef.chef.name != main.name, weights_s))
 		side = self._find_available_chef(weights_s, day)
 
+		if main is None:
+			main = self.nobody
+		if side is None:
+			side = self.nobody
+
 		return (main, side)
 
 	def _print_chef_stats(self, day):
 		stats = self._day_of_week(day) + "\n"
-		for chef in self.chefs_main:
+		for chef in self.chefs_side:
 			stats += str(chef) + "    since: " + str(chef.since) + ", times: " + str(chef.times) + "\n"
 		print(stats)
 
@@ -131,8 +141,8 @@ class Scheduler:
 				week_main.append({})
 				week_side.append({})
 
-			week_main[week][main] = 1 if main not in week_main[week] else week_main[week] + 1
-			week_side[week][side] = 1 if side not in week_side[week] else week_side[week] + 1
+			week_main[week][main] = 1 if main not in week_main[week] else week_main[week][main] + 1
+			week_side[week][side] = 1 if side not in week_side[week] else week_side[week][side] + 1
 
 
 		main_unfairness = 0 # unfairness rises when conditions are not met
@@ -157,8 +167,6 @@ class Scheduler:
 				if week_side[i][key] > 1:
 					side_unfairness += 1
 					print(key.name + "'s schedule is not fair. They cook a side " + str(week_side[i][key]) + " times in a week.")
-
-
 
 		return (main_unfairness, side_unfairness)
 
