@@ -3,12 +3,12 @@ from scheduler import Scheduler
 
 def add_the_squad(scheduler):
 	main_chefs = [
-	Chef("Alex", [Const.MON, Const.TUES]),
-	Chef("Maddy", [Const.MON, Const.TUES]),
-	Chef("Austin", [Const.MON]),
-	Chef("John", [Const.TUES]),
-	Chef("Zana", [Const.WED]),
-	Chef("Steph"),
+	Chef("Alex", unavailable=[Const.MON, Const.TUES]),
+	Chef("Maddy", unavailable=[Const.MON, Const.TUES]),
+	Chef("Austin", unavailable=[Const.MON], since=4),
+	Chef("John", unavailable=[Const.TUES]),
+	Chef("Zana", since=1),
+	Chef("Steph", since=2),
 	Chef("Adam")
 	]
 
@@ -16,11 +16,11 @@ def add_the_squad(scheduler):
 		scheduler.add_chef(chef)
 
 	side_chefs = [
-	Chef("Alex", [Const.MON, Const.TUES]),
-	Chef("Maddy", [Const.MON, Const.TUES]),
-	Chef("Austin", [Const.MON]),
-	Chef("John", [Const.TUES]),
-	Chef("Zana", [Const.WED]),
+	Chef("Alex", unavailable=[Const.MON, Const.TUES], since=4),
+	Chef("Maddy", unavailable=[Const.MON, Const.TUES]),
+	Chef("Austin", unavailable=[Const.MON]),
+	Chef("John", unavailable=[Const.TUES]),
+	Chef("Zana"),
 	Chef("Adam"),
 	Chef("Steph")
 	]

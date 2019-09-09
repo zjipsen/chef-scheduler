@@ -63,6 +63,7 @@ class Scheduler:
 					chef.cook(day)
 				else:
 					chef.dont_cook()
+		self._print_chef_stats(day)
 
 	def _get_sorted_map(self, list_of_chefs):
 		get_tuple = lambda chef: w_chef(chef.since, chef)
@@ -70,8 +71,6 @@ class Scheduler:
 		weights_s.sort(reverse=True, key=lambda tup: tup.since)
 		for w_c in weights_s:
 			pass
-			# print("since: %s, chef: %s" % (w_c.since, w_c.chef))
-		# print("")
 		return weights_s
 
 	def _find_available_chef(self, sorted_chefs, day):
@@ -91,6 +90,12 @@ class Scheduler:
 		side = self._find_available_chef(weights_s, day)
 
 		return (main, side)
+
+	def _print_chef_stats(self, day):
+		stats = self._day_of_week(day) + "\n"
+		for chef in self.chefs_main:
+			stats += str(chef) + "    since: " + str(chef.since) + ", times: " + str(chef.times) + "\n"
+		print(stats)
 
 	def _day_of_week(self, day):
 		day = (day) % Chef.days_in_week
@@ -156,7 +161,6 @@ class Scheduler:
 
 
 		return (main_unfairness, side_unfairness)
-
 
 
 

@@ -9,11 +9,11 @@ class Const:
 class Chef: 
     days_in_week = 5
 
-    def __init__(self, name, unavailable=[]):
+    def __init__(self, name, unavailable=[], since=6, times=0):
         self.name = name
         self.unavailable = unavailable
-        self.since = 0
-        self.times = 0
+        self.since = since
+        self.times = times
 
     def cook(self, day):
         self.since = max(self.since - 6, 0)
