@@ -19,5 +19,8 @@ Future plans:
 6. (DONE) Add tests for fairness
 7. Send SMS via Nexmo API
 8. (DONE) Allow starting algorithm on a Thursday (or any other day)
-9. Two cooks that live in the same apartment shouldn’t cook on the same day
+9. (DONE) Two cooks that live in the same apartment shouldn’t cook on the same day
 10. Support people being gone on vacation
+11. Send update to google calendar
+12. (DONE) Attempt to find a fair schedule by randomly shuffling chef entry order until one is found.
+13. 

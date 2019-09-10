@@ -43,12 +43,15 @@ def add_the_squad(scheduler):
 
 
 def main():
-	scheduler = Scheduler(start_day=Const.MON)
+	scheduler = Scheduler(start_day=Const.WED, num_days=7)
 	add_the_squad(scheduler)
-	scheduler.schedule_three_weeks()
-	scheduler.print_schedule()
-	scheduler.print_fairness()
+	scheduler.find_fair()
 
 
 if __name__ == '__main__':
 	main()
+
+
+
+
+	

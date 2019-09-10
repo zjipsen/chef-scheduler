@@ -1,18 +1,25 @@
 from chef import Chef
+from filter import Filter
 import random
+import math
 from collections import namedtuple
 
-w_chef = namedtuple('w_chef', 'since chef')
+class w_chef:
+	def __init__(self, weight, chef):
+		self.weight = weight
+		self.chef = chef
 
 class Scheduler:
 
 	def __init__(self, start_day=0, num_days=14):
 		self.chefs_main = []
 		self.chefs_side = []
-		self.schedule = [None] * num_days
+		self.num_days = num_days
+		self.schedule = [None] * self.num_days
 		self.start_day = start_day
 		self.nobody = Chef("**Nobody**")
 		self.roommates = {}
+		self.max_times_per_period = 2
 
 	# Public Methods ####################################################################
 	def add_roommate_config(self, roommates):
@@ -23,6 +30,26 @@ class Scheduler:
 			self.chefs_main.append(chef)
 		else:
 			self.chefs_side.append(chef)
+
+		self.max_times_per_period = math.ceil(self.num_days / len(self.chefs_main))
+
+	def find_fair(self):
+		for i in range(100):
+			self._reset()
+			random.shuffle(self.chefs_main)
+			random.shuffle(self.chefs_side)
+			self.schedule_three_weeks()
+
+			fairness = self._is_fair(do_print=False)
+			# if fairness[0] == 0:
+			# 	print("Main chef entry order results in fair schedule.\n" + str([chef.name for chef in self.chefs_main]) + "\n")
+			# if fairness[1] == 0:
+			# 	print("Side chef entry order results in fair schedule.\n" + str([chef.name for chef in self.chefs_side]) + "\n")
+			if fairness[0] == 0 and fairness[1] == 0:
+				self.print_schedule()
+				print("\nSucceeded after " + str(i + 1) + " attempts.")
+				return True
+	
 
 	def schedule_three_weeks(self):
 		for day, sched in enumerate(self.schedule):
@@ -53,6 +80,17 @@ class Scheduler:
 	Schedule one day given the chefs, their availability and cooking record, and what day it is today.
 	day: int < 14
 	"""
+	def _reset(self):
+		self.schedule = [None] * self.num_days
+
+		for chef in self.chefs_main:
+			chef.since = chef.init_since
+			chef.times = 0
+
+		for chef in self.chefs_side:
+			chef.since = chef.init_since
+			chef.times = 0
+
 	def _schedule_day(self, day):
 		actual_day = day + self.start_day
 		index = day
@@ -76,28 +114,54 @@ class Scheduler:
 		#self._print_chef_stats(actual_day)
 
 	def _get_sorted_map(self, list_of_chefs):
-		get_tuple = lambda chef: w_chef(chef.since, chef)
-		weights_s = list(map(get_tuple, list_of_chefs))
-		weights_s.sort(reverse=True, key=lambda tup: tup.since)
-		return weights_s
+		weights = [w_chef(chef.since, chef) for chef in list_of_chefs]
+		weights.sort(reverse=True, key=lambda wc: wc.weight)
+		return weights
 
 	def _find_available_chef(self, sorted_chefs, day):
-		# sorted_chefs: a reverse-sorted list of w_chef objects (chef.since, chef)
 		current_day = day % Chef.days_in_week
-		for (since, chef) in sorted_chefs:
-			if current_day not in chef.unavailable and chef.times < 2:
-				return chef
-		return None
+		available = []
+		for (index, sorted_chef) in enumerate(sorted_chefs):
+			chef = sorted_chef.chef
+			if current_day not in chef.unavailable and chef.times < self.max_times_per_period:
+				available.append(sorted_chef)
+		if len(available) > 0 and available[0].weight == -1:
+			print("well, this would have rather been avoided")
+		return available[0].chef if len(available) > 0 else None
 
-	def _choose(self, day):
+	def _yesterdays_chefs(self, day):
+		if (day > self.start_day):
+			yesterday = day - self.start_day - 1
+			if self.schedule[yesterday] is not None:
+				(main, side) = self.schedule[yesterday]
+				return [main.name, side.name]
+		return []
+
+	def _get_sorted_map_main(self, yesterdays_chefs=[]):
+		filt = Filter()
+
 		weights_m = self._get_sorted_map(self.chefs_main)
-		main = self._find_available_chef(weights_m, day)
+		weights_m = filt.yesterday(yesterdays_chefs, weights_m)
+		return weights_m
+
+	def _get_sorted_map_side(self, main, yesterdays_chefs):
+		filt = Filter()
 
 		weights_s = self._get_sorted_map(self.chefs_side)
-		weights_s = list(filter(lambda weight_chef: weight_chef.chef.name != main.name, weights_s))
-		if (self.roommates):
-			weights_s = list(filter(lambda weight_chef: weight_chef.chef.name not in self.roommates[main.name], weights_s))
+		weights_s = filt.yesterday(yesterdays_chefs, weights_s)
+		weights_s = filt.same_person(main, weights_s)
+		weights_s = filt.roommates(main, self.roommates, weights_s)
+		return weights_s
 
+	def _choose(self, day):
+		yesterdays_chefs = self._yesterdays_chefs(day)
+
+		# choose main chef
+		weights_m = self._get_sorted_map_main(yesterdays_chefs)
+		main = self._find_available_chef(weights_m, day)
+
+		# choose side chef
+		weights_s = self._get_sorted_map_side(main, yesterdays_chefs)
 		side = self._find_available_chef(weights_s, day)
 
 		if main is None:
@@ -132,47 +196,65 @@ class Scheduler:
 		# 	name = "Sat"
 		return name + ": "
 
-	def _is_fair(self):
-		main_dist = {}
-		side_dist = {}
+	def _get_empty_dict(self):
+		return {
+			"Alex": 0,
+			"Zana": 0,
+			"Adam": 0,
+			"John": 0,
+			"Maddy": 0,
+			"Steph": 0,
+			"Austin": 0
+		}
+
+	def _is_fair(self, do_print=True):
+		main_dist = self._get_empty_dict()
+		side_dist = self._get_empty_dict()
 		week = -1
 		week_main = []
 		week_side = []
 		for (index, (main, side)) in enumerate(self.schedule):
-			main_dist[main] = 1 if main not in main_dist else main_dist[main] + 1
-			side_dist[side] = 1 if side not in side_dist else side_dist[side] + 1
+			if main != self.nobody:
+				main_dist[main.name] += 1
+			if side != self.nobody:
+				side_dist[side.name] += 1
 
-			if index % Chef.days_in_week == 0:
-				week += 1
-				week_main.append({})
-				week_side.append({})
-
-			week_main[week][main] = 1 if main not in week_main[week] else week_main[week][main] + 1
-			week_side[week][side] = 1 if side not in week_side[week] else week_side[week][side] + 1
+				if index % Chef.days_in_week == 0:
+					week += 1
+					week_main.append(self._get_empty_dict())
+					week_side.append(self._get_empty_dict())
+			if main != self.nobody:
+				week_main[week][main.name] += 1
+			if side != self.nobody:
+				week_side[week][side.name] += 1
 
 
 		main_unfairness = 0 # unfairness rises when conditions are not met
 		side_unfairness = 0
 
 		for key in main_dist:
-			if main_dist[key] != 2:
+			if main_dist[key] != self.max_times_per_period:
 				main_unfairness += 1
-				print(key.name + "'s schedule is not fair. They cook a main " + str(main_dist[key]) + " times.")
+				if do_print:
+					print(key + "'s schedule is not fair. They cook a main " + str(main_dist[key]) + " times.")
 
 		for key in side_dist:
-			if side_dist[key] != 2: 
+			if side_dist[key] != self.max_times_per_period:
 				side_unfairness += 1
-				print(key.name + "'s schedule is not fair. They cook a side " + str(side_dist[key]) + " times.")
+				if do_print:
+					print(key + "'s schedule is not fair. They cook a side " + str(side_dist[key]) + " times.")
 
 		for i in range(week):
 			for key in week_main[i]:
 				if week_main[i][key] > 1:
 					main_unfairness += 1
-					print(key.name + "'s schedule is not fair. They cook a main " + str(week_main[i][key]) + " times in a week.")
+					if do_print:
+						print(key + "'s schedule is not fair. They cook a main " + str(week_main[i][key]) + " times in a week.")
 			for key in week_side[i]:
 				if week_side[i][key] > 1:
 					side_unfairness += 1
-					print(key.name + "'s schedule is not fair. They cook a side " + str(week_side[i][key]) + " times in a week.")
+					if do_print:
+						print(key + "'s schedule is not fair. They cook a side " + str(week_side[i][key]) + " times in a week.")
 
 		return (main_unfairness, side_unfairness)
 

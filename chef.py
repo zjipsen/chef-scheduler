@@ -14,6 +14,7 @@ class Chef:
         self.unavailable = unavailable
         self.since = since
         self.times = times
+        self.init_since = since
 
     def cook(self):
         self.since = max(self.since - 6, 0)
