@@ -12,8 +12,11 @@ class Scheduler:
 		self.schedule = [None] * num_days
 		self.start_day = start_day
 		self.nobody = Chef("**Nobody**")
+		self.roommates = {}
 
 	# Public Methods ####################################################################
+	def add_roommate_config(self, roommates):
+		self.roommates = roommates
 
 	def add_chef(self, chef, main=True):
 		if (main):
@@ -92,6 +95,9 @@ class Scheduler:
 
 		weights_s = self._get_sorted_map(self.chefs_side)
 		weights_s = list(filter(lambda weight_chef: weight_chef.chef.name != main.name, weights_s))
+		if (self.roommates):
+			weights_s = list(filter(lambda weight_chef: weight_chef.chef.name not in self.roommates[main.name], weights_s))
+
 		side = self._find_available_chef(weights_s, day)
 
 		if main is None:
