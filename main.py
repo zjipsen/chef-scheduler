@@ -1,5 +1,7 @@
 from chef import Chef, Const
 from scheduler import Scheduler
+from messenger import Messenger
+from datetime import datetime
 
 def add_the_squad(scheduler):
 
@@ -41,12 +43,18 @@ def add_the_squad(scheduler):
 
 	scheduler.add_roommate_config(roommates)
 
+numbers = [
+	19494392557
+]
 
 def main():
-	scheduler = Scheduler(start_day=Const.WED, num_days=7)
+	scheduler = Scheduler(start_day=Const.TUES, start_date=datetime.date(datetime(2019, 9, 10)), num_days=7)
 	add_the_squad(scheduler)
 	scheduler.find_fair()
 
+	messenger = Messenger()
+	print(scheduler.string_schedule())
+	# messenger.send_message(scheduler.string_schedule(3), numbers[0])
 
 if __name__ == '__main__':
 	main()
@@ -54,4 +62,3 @@ if __name__ == '__main__':
 
 
 
-	

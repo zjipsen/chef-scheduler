@@ -4,7 +4,10 @@ My friends and I cook dinner almost every night. One of us cooks a main dish, an
 
 A dynamic scheduling algorithm that takes into account people's differing availability, days that no one is around, and weights to favor people that haven't cooked in a while, is preferrable to signing people up for a consistent day of the week.
 
-Usage: 
+Pre-requisites:
+pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib nexmo
+
+Usage:
 python3 main.py
 
 Current behavior:
@@ -23,4 +26,3 @@ Future plans:
 10. Support people being gone on vacation
 11. Send update to google calendar
 12. (DONE) Attempt to find a fair schedule by randomly shuffling chef entry order until one is found.
-13. 

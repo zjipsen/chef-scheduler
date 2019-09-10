@@ -1,6 +1,7 @@
 from chef import Chef
 from filter import Filter
 import random
+from datetime import timedelta
 import math
 from collections import namedtuple
 
@@ -11,15 +12,18 @@ class w_chef:
 
 class Scheduler:
 
-	def __init__(self, start_day=0, num_days=14):
+	def __init__(self, start_day=0, start_date=None, num_days=14):
+		self.num_days = num_days
+		self.start_day = start_day
+		self.start_date = start_date
+		
 		self.chefs_main = []
 		self.chefs_side = []
-		self.num_days = num_days
 		self.schedule = [None] * self.num_days
-		self.start_day = start_day
-		self.nobody = Chef("**Nobody**")
 		self.roommates = {}
 		self.max_times_per_period = 2
+		self.nobody = Chef("**Nobody**")
+
 
 	# Public Methods ####################################################################
 	def add_roommate_config(self, roommates):
@@ -31,7 +35,7 @@ class Scheduler:
 		else:
 			self.chefs_side.append(chef)
 
-		self.max_times_per_period = math.ceil(self.num_days / len(self.chefs_main))
+		self.max_times_per_period = math.ceil(self.num_days / float(len(self.chefs_main)))
 
 	def find_fair(self):
 		for i in range(100):
@@ -46,8 +50,8 @@ class Scheduler:
 			# if fairness[1] == 0:
 			# 	print("Side chef entry order results in fair schedule.\n" + str([chef.name for chef in self.chefs_side]) + "\n")
 			if fairness[0] == 0 and fairness[1] == 0:
-				self.print_schedule()
-				print("\nSucceeded after " + str(i + 1) + " attempts.")
+				# self.print_schedule()
+				print("\nSucceeded after " + str(i + 1) + " attempts.\n")
 				return True
 	
 
@@ -56,16 +60,32 @@ class Scheduler:
 			self._schedule_day(day)
 
 	def print_schedule(self):
-		print("\n      Main   | Side\n________________________")
+		print(self.string_schedule())
+
+	def string_schedule(self):
+		string = "Day:    Main   |  Side\n_____________________\n"
+		date = self.start_date
+
+		if date is not None:
+			string += str(date.month) + "-" + str(date.day) +  "\n"
+			date = date + timedelta(days=1)
+
 		for i, schedule in enumerate(self.schedule):
 			actual_day = i + self.start_day
 
 			if (schedule):
-				print(self._day_of_week(actual_day) + str(schedule[0]) + "|" + str(schedule[1]))
+				string += (self._day_of_week(actual_day) + str(schedule[0]) + "|" + str(schedule[1])) + "\n"
 			else:
-				print(self._day_of_week(actual_day) + "Nobody cooks")
+				string += (self._day_of_week(actual_day) + "Nobody cooks") + "\n"
 			if (actual_day % Chef.days_in_week == Chef.days_in_week - 1):
-				print("")
+				string += "\n"
+				if date is not None:
+					date = date + timedelta(days=2)
+					string += str(date.month) + "-" + str(date.day) +  "\n"
+
+			if date is not None:
+				date = date + timedelta(days=1)
+		return string
 
 	def print_fairness(self):
 		(main_unfair, side_unfair) = self._is_fair()
