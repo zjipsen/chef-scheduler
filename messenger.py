@@ -21,7 +21,7 @@ class Messenger:
 			print(str(recipient) + " (message success)")
 			return True
 		else:
-		    print("Message failed with error: %s " % responseData['messages'][0]['error-text'])
+		    print(str(recipient) + "Message failed with error: %s " % responseData['messages'][0]['error-text'])
 		    return False
 
 	def verify(self, recipient):

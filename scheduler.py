@@ -148,7 +148,7 @@ class Scheduler:
 			chef = sorted_chef.chef
 			if current_day not in chef.unavailable and chef.times < self.max_times_per_period:
 				available.append(sorted_chef)
-		if len(available) > 0 and available[0].weight == 2.5:
+		if len(available) > 0 and available[0].weight == 1.5:
 			print("well, this would have rather been avoided")
 		return available[0].chef if len(available) > 0 else None
 
@@ -164,14 +164,14 @@ class Scheduler:
 		filt = Filter()
 
 		weights_m = self._get_sorted_map(self.chefs_main)
-		# weights_m = filt.yesterday(yesterdays_chefs, weights_m)
+		weights_m = filt.yesterday(yesterdays_chefs, weights_m)
 		return weights_m
 
 	def _get_sorted_map_side(self, main, yesterdays_chefs):
 		filt = Filter()
 
 		weights_s = self._get_sorted_map(self.chefs_side)
-		# weights_s = filt.yesterday(yesterdays_chefs, weights_s)
+		weights_s = filt.yesterday(yesterdays_chefs, weights_s)
 		weights_s = filt.same_person(main, weights_s)
 		weights_s = filt.roommates(main, self.roommates, weights_s)
 		return weights_s
