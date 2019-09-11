@@ -44,7 +44,7 @@ class Scheduler:
 			random.shuffle(self.chefs_side)
 			self.schedule_three_weeks()
 
-			fairness = self._is_fair(do_print=False)
+			fairness = self._is_fair(do_print=True)
 			# if fairness[0] == 0:
 			# 	print("Main chef entry order results in fair schedule.\n" + str([chef.name for chef in self.chefs_main]) + "\n")
 			# if fairness[1] == 0:
@@ -53,6 +53,8 @@ class Scheduler:
 				# self.print_schedule()
 				print("\nSucceeded after " + str(i + 1) + " attempts.\n")
 				return True
+			else:
+				print("could not find fair schedule on attempt " + str(i + 1))
 	
 
 	def schedule_three_weeks(self):
@@ -79,7 +81,7 @@ class Scheduler:
 				string += (self._day_of_week(actual_day) + "Nobody cooks") + "\n"
 			if (actual_day % Chef.days_in_week == Chef.days_in_week - 1):
 				string += "\n"
-				if date is not None:
+				if date is not None and (i + 1 != self.num_days):
 					date = date + timedelta(days=2)
 					string += str(date.month) + "-" + str(date.day) +  "\n"
 
@@ -131,7 +133,8 @@ class Scheduler:
 					chef.cook()
 				else:
 					chef.dont_cook()
-		#self._print_chef_stats(actual_day)
+
+		# self._print_chef_stats(actual_day)
 
 	def _get_sorted_map(self, list_of_chefs):
 		weights = [w_chef(chef.since, chef) for chef in list_of_chefs]
@@ -145,7 +148,7 @@ class Scheduler:
 			chef = sorted_chef.chef
 			if current_day not in chef.unavailable and chef.times < self.max_times_per_period:
 				available.append(sorted_chef)
-		if len(available) > 0 and available[0].weight == -1:
+		if len(available) > 0 and available[0].weight == 2.5:
 			print("well, this would have rather been avoided")
 		return available[0].chef if len(available) > 0 else None
 
@@ -161,14 +164,14 @@ class Scheduler:
 		filt = Filter()
 
 		weights_m = self._get_sorted_map(self.chefs_main)
-		weights_m = filt.yesterday(yesterdays_chefs, weights_m)
+		# weights_m = filt.yesterday(yesterdays_chefs, weights_m)
 		return weights_m
 
 	def _get_sorted_map_side(self, main, yesterdays_chefs):
 		filt = Filter()
 
 		weights_s = self._get_sorted_map(self.chefs_side)
-		weights_s = filt.yesterday(yesterdays_chefs, weights_s)
+		# weights_s = filt.yesterday(yesterdays_chefs, weights_s)
 		weights_s = filt.same_person(main, weights_s)
 		weights_s = filt.roommates(main, self.roommates, weights_s)
 		return weights_s
@@ -193,6 +196,11 @@ class Scheduler:
 
 	def _print_chef_stats(self, day):
 		stats = self._day_of_week(day) + "\n"
+		for chef in self.chefs_main:
+			stats += str(chef) + "    since: " + str(chef.since) + ", times: " + str(chef.times) + "\n"
+		print(stats)
+		print("side:")
+		stats=""
 		for chef in self.chefs_side:
 			stats += str(chef) + "    since: " + str(chef.since) + ", times: " + str(chef.times) + "\n"
 		print(stats)
@@ -223,8 +231,8 @@ class Scheduler:
 			"Adam": 0,
 			"John": 0,
 			"Maddy": 0,
-			"Steph": 0,
-			"Austin": 0
+			# "Steph": 0,
+			# "Austin": 0
 		}
 
 	def _is_fair(self, do_print=True):

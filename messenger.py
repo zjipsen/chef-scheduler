@@ -18,7 +18,16 @@ class Messenger:
 		)
 
 		if responseData["messages"][0]["status"] == "0":
-		    return True
+			print(str(recipient) + " (message success)")
+			return True
 		else:
 		    print("Message failed with error: %s " % responseData['messages'][0]['error-text'])
 		    return False
+
+	def verify(self, recipient):
+		response = self.client.start_verification(number=recipient, brand="Zana")
+
+		if response["status"] == "0":
+		    print("Started verification request_id is %s" % (response["request_id"]))
+		else:
+		    print("Error: %s" % response["error_text"])

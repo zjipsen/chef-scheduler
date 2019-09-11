@@ -20,9 +20,21 @@ class Filter:
     	return w_chefs
 
     def roommates(self, main, roommates, w_chefs):
-    	if main and roommates:
-    		return self._filter(lambda w_chef: w_chef.chef.name not in roommates[main.name], w_chefs)
+    	def weight_roommates(main, roommates, w_chef):
+    		if (w_chef.chef.name in roommates[main.name]):
+    			w_chef.weight = 2.5
+    		return w_chef
+    		
+    	if main is not None:
+    		w_chefs = [weight_roommates(main, roommates, w_chef) for w_chef in w_chefs]
+    		w_chefs.sort(reverse=True, key=lambda wc: wc.weight)
+    		return w_chefs
     	return w_chefs
+
+    # def roommates(self, main, roommates, w_chefs):
+    # 	if main and roommates:
+    # 		return self._filter(lambda w_chef: w_chef.chef.name not in roommates[main.name], w_chefs)
+    # 	return w_chefs
 
     def same_person(self, main, w_chefs):
     	if main:
