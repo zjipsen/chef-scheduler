@@ -5,14 +5,19 @@ My friends and I cook dinner almost every night. One of us cooks a main dish, an
 A dynamic scheduling algorithm that takes into account people's differing availability, days that no one is around, and weights to favor people that haven't cooked in a while, is preferrable to signing people up for a consistent day of the week.
 
 Pre-requisites:
-#pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib nexmo
 pip install nexmo
 
 Usage:
 python main.py
 
 Current behavior:
-Assign nights based on rudimentary weights system. The person who cooked the longest ago is preferred; if unavailable, the next least-recent chef is selected, and so on.
+- Assign nights based on rudimentary weights system. The person who cooked the longest ago is preferred; if unavailable, the next least-recent chef is selected, and so on.
+- The method "find_fair" introduces randomization of the order of chefs in the schedule as presented to the scheduling algorithm. It randomizes the input order, then attempts to find a fair schedule by running the algorithm. If it fails, it tries again.
+- Filters:
+	1. The same person cannot cook twice in one day.
+	2. Roommates are not assigned the same day.
+	3. No chef is assigned to cook two days in a row.
+By uncommenting the other versions of the `roommates` and `yesterday` schedules, conditions 2. and 3. will be allowed, but not unless they are necessary to generate a viable schedule.
 
 Future plans:
 1. (DONE) Don't assign someone both a main and a side on the same day
