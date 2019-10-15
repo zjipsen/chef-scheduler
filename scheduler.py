@@ -22,7 +22,7 @@ class Scheduler:
 		self.schedule = [None] * self.num_days
 		self.roommates = {}
 		self.max_times_per_period = 2
-		self.nobody = Chef("**Nobody**")
+		self.nobody = Chef("-")
 
 
 	# Public Methods ####################################################################
@@ -38,7 +38,7 @@ class Scheduler:
 		self.max_times_per_period = math.ceil(self.num_days / float(len(self.chefs_main)))
 
 	def find_fair(self):
-		for i in range(100):
+		for i in range(10):
 			self._reset()
 			random.shuffle(self.chefs_main)
 			random.shuffle(self.chefs_side)
@@ -107,11 +107,11 @@ class Scheduler:
 
 		for chef in self.chefs_main:
 			chef.since = chef.init_since
-			chef.times = 0
+			chef.times = chef.init_times
 
 		for chef in self.chefs_side:
 			chef.since = chef.init_since
-			chef.times = 0
+			chef.times = chef.init_times
 
 	def _schedule_day(self, day):
 		actual_day = day + self.start_day
@@ -231,8 +231,8 @@ class Scheduler:
 			"Adam": 0,
 			"John": 0,
 			"Maddy": 0,
-			# "Steph": 0,
-			# "Austin": 0
+			"Steph": 0,
+			"Austin": 0
 		}
 
 	def _is_fair(self, do_print=True):
@@ -260,17 +260,31 @@ class Scheduler:
 		main_unfairness = 0 # unfairness rises when conditions are not met
 		side_unfairness = 0
 
+		"""Scores fairness based on how many times they cooked in the schedule"""
 		for key in main_dist:
 			if main_dist[key] != self.max_times_per_period:
 				main_unfairness += 1
 				if do_print:
 					print(key + "'s schedule is not fair. They cook a main " + str(main_dist[key]) + " times.")
 
-		for key in side_dist:
-			if side_dist[key] != self.max_times_per_period:
-				side_unfairness += 1
-				if do_print:
-					print(key + "'s schedule is not fair. They cook a side " + str(side_dist[key]) + " times.")
+		# for key in side_dist:
+		# 	if side_dist[key] != self.max_times_per_period:
+		# 		side_unfairness += 1
+		# 		if do_print:
+		# 			print(key + "'s schedule is not fair. They cook a side " + str(side_dist[key]) + " times.")
+
+		"""Scores fairness based on Chef object's 'times' field"""
+		# for chef in self.chefs_main:
+		# 	if chef.times != self.max_times_per_period:
+		# 		main_unfairness += 1
+		# 		if do_print:
+		# 			print(chef.name + "'s schedule is not fair. They cook a main " + str(chef.times) + " times.")
+
+		# for chef in self.chefs_side:
+		# 	if chef.times != self.max_times_per_period:
+		# 		side_unfairness += 1
+		# 		if do_print:
+		# 			print(chef.name + "'s schedule is not fair. They cook a side " + str(chef.times) + " times.")
 
 		for i in range(week):
 			for key in week_main[i]:

@@ -15,6 +15,7 @@ class Chef:
         self.since = since
         self.times = times
         self.init_since = since
+        self.init_times = times
 
     def cook(self):
         self.since = max(self.since - 6, 0)
