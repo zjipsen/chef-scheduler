@@ -1,11 +1,3 @@
-class Const:
-    SUN = 0
-    MON = 1
-    TUES = 2
-    WED = 3
-    THURS = 4
-    DAYS = [SUN, MON, TUES, WED, THURS]
-
 class Chef: 
     days_in_week = 5
 

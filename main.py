@@ -1,28 +1,29 @@
 # -*- coding: utf-8 -*-
-from chef import Chef, Const
+from chef import Chef
 from scheduler import Scheduler
 from messenger import Messenger
 from datetime import datetime
 from time import sleep
+from daysOfTheWeek import DAYS_OF_THE_WEEK
 
 def add_the_squad(scheduler):
 
 	main_chefs = [
-		Chef("Alex", unavailable=[Const.MON, Const.THURS]),
-		Chef("Maddy", unavailable=[Const.MON, Const.TUES, Const.THURS]),
-		Chef("Austin", unavailable=[Const.MON]),
-		Chef("John", unavailable=[Const.TUES]),
-		Chef("Zana", unavailable=[Const.WED, Const.THURS]),
-		Chef("Adam", unavailable=[Const.WED]),
+		Chef("Alex", unavailable=[DAYS_OF_THE_WEEK.MON.value, DAYS_OF_THE_WEEK.THU.value]),
+		Chef("Maddy", unavailable=[DAYS_OF_THE_WEEK.MON.value, DAYS_OF_THE_WEEK.TUE.value, DAYS_OF_THE_WEEK.THU.value]),
+		Chef("Austin", unavailable=[DAYS_OF_THE_WEEK.MON.value]),
+		Chef("John", unavailable=[DAYS_OF_THE_WEEK.TUE.value]),
+		Chef("Zana", unavailable=[DAYS_OF_THE_WEEK.WED.value, DAYS_OF_THE_WEEK.THU.value]),
+		Chef("Adam", unavailable=[DAYS_OF_THE_WEEK.WED.value]),
 		Chef("Steph"),
 	]
 
 	side_chefs = [
-		# Chef("Maddy", unavailable=[Const.MON, Const.TUES]),
-		Chef("Alex", unavailable=[Const.MON, Const.THURS]),
-		Chef("Austin", unavailable=[Const.MON]),
-		Chef("John", unavailable=[Const.TUES]),
-		Chef("Zana", unavailable=[Const.WED, Const.THURS]),
+		# Chef("Maddy", unavailable=[DAYS_OF_THE_WEEK.MON.value, DAYS_OF_THE_WEEK.TUE.value]),
+		Chef("Alex", unavailable=[DAYS_OF_THE_WEEK.MON.value, DAYS_OF_THE_WEEK.THU.value]),
+		Chef("Austin", unavailable=[DAYS_OF_THE_WEEK.MON.value]),
+		Chef("John", unavailable=[DAYS_OF_THE_WEEK.TUE.value]),
+		Chef("Zana", unavailable=[DAYS_OF_THE_WEEK.WED.value, DAYS_OF_THE_WEEK.THU.value]),
 		# Chef("Adam"),
 		Chef("Steph")
 	]
@@ -102,12 +103,13 @@ Thu:  John     | Steph
 
 
 def main():
-	scheduler = Scheduler(start_day=Const.TUES, start_date=datetime.date(datetime(2019, 10, 15)), num_days=7)
+	scheduler = Scheduler(start_day= DAYS_OF_THE_WEEK.TUE.value, start_date=datetime.date(datetime(2019, 10, 15)), num_days=7)
 	add_the_squad(scheduler)
 	scheduler.find_fair()
 
 	messenger = Messenger()
 	print(scheduler.string_schedule())
+	print(scheduler.json_schedule())
 	
 	schedule = manual_schedule
 
@@ -123,7 +125,7 @@ def main():
 		# messenger.send_message('\\(*^ _ ^*)/ \nHello ' + name + ', I am the scheduling bot! Please save my number! Here is the schedule for next week:', number)
 
 if __name__ == '__main__':
-	main()
+		main()
 
 
 

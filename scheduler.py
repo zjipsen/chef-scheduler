@@ -4,6 +4,8 @@ import random
 from datetime import timedelta
 import math
 from collections import namedtuple
+from daysOfTheWeek import DAYS_OF_THE_WEEK
+import json
 
 class w_chef:
 	def __init__(self, weight, chef):
@@ -88,6 +90,85 @@ class Scheduler:
 			if date is not None:
 				date = date + timedelta(days=1)
 		return string
+
+	def json_schedule(self):
+		request_json = []
+
+		# Loop through schedule to create the skeleton JSON dictionaries
+
+		# Date for the first loop
+		json_date = self.start_date
+		if json_date is not None:
+			json_date = json_date + timedelta(days=1)
+
+		for i, schedule in enumerate(self.schedule):
+			# Get calendar day
+			actual_day = i + self.start_day
+
+			# Create first JSON dictionary if it does not exist
+			if len(request_json) == 0:
+				request_json.append({ "start_date": str(json_date).strip(), "schedule": [] })
+
+			# If in a new week, create a new JSON dictionary for the new week
+			if (actual_day % Chef.days_in_week == Chef.days_in_week - 1):
+				if json_date is not None and (i + 1 != self.num_days):
+					json_date = json_date + timedelta(days=2)
+					request_json.append({ "start_date": str(json_date).strip(), "schedule": [] })
+
+			# Increment the date
+			if json_date is not None:
+				json_date = json_date + timedelta(days=1)
+
+		# Loop through schedule to add the schedule data dictionaries to the appropriate
+		# JSON dictionaries
+
+		# Date for the second loop
+		date = self.start_date
+		if date is not None:
+			date = date + timedelta(days=1)
+		jsonToUpdate = 0
+
+		for i, schedule in enumerate(self.schedule):
+			# Get calendar day
+			actual_day = i + self.start_day
+
+			cooking_day = DAYS_OF_THE_WEEK(actual_day % Chef.days_in_week).name
+
+			# Increment the date
+			if date is not None:
+				date = date + timedelta(days=1)
+
+			# Get the chefs for the schedule
+			if (schedule):
+				main_chef = str(schedule[0]).strip()
+				side_chef = str(schedule[1]).strip()
+
+			# Create the main_chef schedule data and append to correct JSON dictionary
+			if (main_chef and main_chef != '-'):
+				main_info = {
+					"type": "main",
+					"day": cooking_day,
+					"chef": main_chef,
+				}
+				request_json[jsonToUpdate]['schedule'].append(main_info)
+
+			# Create the side_chef schedule data and append to correct JSON dictionary
+			if (side_chef and side_chef != '-'):
+				side_info = {
+					"type": "side",
+					"day": cooking_day,
+					"chef": side_chef,
+				}
+				request_json[jsonToUpdate]['schedule'].append(side_info)
+
+			# If in a new week, create a new JSON dictionary for the new week
+			if (actual_day % Chef.days_in_week == Chef.days_in_week - 1):
+				if date is not None and (i + 1 != self.num_days):
+					date = date + timedelta(days=2)
+					print('first date ' + str(date))
+					jsonToUpdate += 1
+
+		return request_json
 
 	def print_fairness(self):
 		(main_unfair, side_unfair) = self._is_fair()
