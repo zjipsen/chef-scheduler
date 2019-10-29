@@ -1,6 +1,6 @@
 from enum import Enum, unique
 @unique
-class DAYS_OF_THE_WEEK(Enum):
+class DAYS(Enum):
     SUN = 0
     MON = 1
     TUE = 2

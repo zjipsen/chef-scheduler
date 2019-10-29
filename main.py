@@ -4,27 +4,27 @@ from scheduler import Scheduler
 from messenger import Messenger
 from datetime import datetime
 from time import sleep
-from daysOfTheWeek import DAYS_OF_THE_WEEK
+from days import DAYS
 import requests
 
 def add_the_squad(scheduler):
 
 	main_chefs = [
-		Chef("Alex", unavailable=[DAYS_OF_THE_WEEK.MON.value, DAYS_OF_THE_WEEK.THU.value]),
-		Chef("Maddy", unavailable=[DAYS_OF_THE_WEEK.MON.value, DAYS_OF_THE_WEEK.TUE.value, DAYS_OF_THE_WEEK.THU.value]),
-		Chef("Austin", unavailable=[DAYS_OF_THE_WEEK.MON.value]),
-		Chef("John", unavailable=[DAYS_OF_THE_WEEK.TUE.value]),
-		Chef("Zana", unavailable=[DAYS_OF_THE_WEEK.WED.value, DAYS_OF_THE_WEEK.THU.value]),
-		Chef("Adam", unavailable=[DAYS_OF_THE_WEEK.WED.value]),
+		Chef("Alex", unavailable=[DAYS.MON.value, DAYS.THU.value]),
+		Chef("Maddy", unavailable=[DAYS.MON.value, DAYS.TUE.value, DAYS.THU.value]),
+		Chef("Austin", unavailable=[DAYS.MON.value]),
+		Chef("John", unavailable=[DAYS.TUE.value]),
+		Chef("Zana", unavailable=[DAYS.WED.value, DAYS.THU.value]),
+		Chef("Adam", unavailable=[DAYS.WED.value]),
 		Chef("Steph"),
 	]
 
 	side_chefs = [
-		# Chef("Maddy", unavailable=[DAYS_OF_THE_WEEK.MON.value, DAYS_OF_THE_WEEK.TUE.value]),
-		Chef("Alex", unavailable=[DAYS_OF_THE_WEEK.MON.value, DAYS_OF_THE_WEEK.THU.value]),
-		Chef("Austin", unavailable=[DAYS_OF_THE_WEEK.MON.value]),
-		Chef("John", unavailable=[DAYS_OF_THE_WEEK.TUE.value]),
-		Chef("Zana", unavailable=[DAYS_OF_THE_WEEK.WED.value, DAYS_OF_THE_WEEK.THU.value]),
+		# Chef("Maddy", unavailable=[DAYS.MON.value, DAYS.TUE.value]),
+		Chef("Alex", unavailable=[DAYS.MON.value, DAYS.THU.value]),
+		Chef("Austin", unavailable=[DAYS.MON.value]),
+		Chef("John", unavailable=[DAYS.TUE.value]),
+		Chef("Zana", unavailable=[DAYS.WED.value, DAYS.THU.value]),
 		# Chef("Adam"),
 		Chef("Steph")
 	]
@@ -104,7 +104,7 @@ Thu:  John     | Steph
 
 
 def main():
-	scheduler = Scheduler(start_day= DAYS_OF_THE_WEEK.TUE.value, start_date=datetime.date(datetime(2019, 10, 15)), num_days=7)
+	scheduler = Scheduler(start_day= DAYS.TUE.value, start_date=datetime.date(datetime(2019, 10, 15)), num_days=7)
 	add_the_squad(scheduler)
 	scheduler.find_fair()
 

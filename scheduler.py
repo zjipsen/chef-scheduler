@@ -4,7 +4,7 @@ import random
 from datetime import timedelta
 import math
 from collections import namedtuple
-from daysOfTheWeek import DAYS_OF_THE_WEEK
+from days import DAYS
 import json
 
 class w_chef:
@@ -132,7 +132,7 @@ class Scheduler:
 			# Get calendar day
 			actual_day = i + self.start_day
 
-			cooking_day = DAYS_OF_THE_WEEK(actual_day % Chef.days_in_week).name
+			cooking_day = DAYS(actual_day % Chef.days_in_week).name
 
 			# Increment the date
 			if date is not None:
