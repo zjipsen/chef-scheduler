@@ -1,28 +1,30 @@
 # -*- coding: utf-8 -*-
-from chef import Chef, Const
+from chef import Chef
 from scheduler import Scheduler
 from messenger import Messenger
 from datetime import datetime
 from time import sleep
+from days import DAYS
+import requests
 
 def add_the_squad(scheduler):
 
 	main_chefs = [
-		Chef("Alex", unavailable=[Const.MON, Const.THURS]),
-		Chef("Maddy", unavailable=[Const.MON, Const.TUES, Const.THURS]),
-		Chef("Austin", unavailable=[Const.MON]),
-		Chef("John", unavailable=[Const.TUES]),
-		Chef("Zana", unavailable=[Const.WED, Const.THURS]),
-		Chef("Adam", unavailable=[Const.WED]),
+		Chef("Alex", unavailable=[DAYS.MON.value, DAYS.THU.value]),
+		Chef("Maddy", unavailable=[DAYS.MON.value, DAYS.TUE.value, DAYS.THU.value]),
+		Chef("Austin", unavailable=[DAYS.MON.value]),
+		Chef("John", unavailable=[DAYS.TUE.value]),
+		Chef("Zana", unavailable=[DAYS.WED.value, DAYS.THU.value]),
+		Chef("Adam", unavailable=[DAYS.WED.value]),
 		Chef("Steph"),
 	]
 
 	side_chefs = [
-		# Chef("Maddy", unavailable=[Const.MON, Const.TUES]),
-		Chef("Alex", unavailable=[Const.MON, Const.THURS]),
-		Chef("Austin", unavailable=[Const.MON]),
-		Chef("John", unavailable=[Const.TUES]),
-		Chef("Zana", unavailable=[Const.WED, Const.THURS]),
+		# Chef("Maddy", unavailable=[DAYS.MON.value, DAYS.TUE.value]),
+		Chef("Alex", unavailable=[DAYS.MON.value, DAYS.THU.value]),
+		Chef("Austin", unavailable=[DAYS.MON.value]),
+		Chef("John", unavailable=[DAYS.TUE.value]),
+		Chef("Zana", unavailable=[DAYS.WED.value, DAYS.THU.value]),
 		# Chef("Adam"),
 		Chef("Steph")
 	]
@@ -102,17 +104,22 @@ Thu:  John     | Steph
 
 
 def main():
-	scheduler = Scheduler(start_day=Const.TUES, start_date=datetime.date(datetime(2019, 10, 15)), num_days=7)
+	scheduler = Scheduler(start_day= DAYS.TUE.value, start_date=datetime.date(datetime(2019, 10, 15)), num_days=7)
 	add_the_squad(scheduler)
 	scheduler.find_fair()
 
 	messenger = Messenger()
 	print(scheduler.string_schedule())
-	
+
+	# Google Calendar integration data
+	gcalListOfJson = scheduler.json_schedule()
+	print(gcalListOfJson)
+
 	schedule = manual_schedule
 
 	""" 
 		ALWAYS send to myself first before sending out, to check formatting and validity. 
+		ALWAYS glance at the JSON to verify
 		DON'T FORGET TO UPDATE SHARED NOTE.
 	"""
 	for (name, number) in numbers:
@@ -121,9 +128,12 @@ def main():
 		
 		pass		
 		# messenger.send_message('\\(*^ _ ^*)/ \nHello ' + name + ', I am the scheduling bot! Please save my number! Here is the schedule for next week:', number)
+		# for json in gcalListOfJson:
+		# 		r = requests.post("https://chef-cal-integration.herokuapp.com/schedule", data = json)
+		# 		print(r.status_code, r.reason)
 
 if __name__ == '__main__':
-	main()
+		main()
 
 
 
