@@ -57,65 +57,36 @@ numbers = [
 	# ("Adam", 12624429397)
 ]
 
-
-potential = """
-Day:    Main   |  Side
-_____________________
-9-29
-Sun:  Steph  | -
-Mon:  Zana   | -
-Tue:  Adam   | Austin		off this week: Austin, Maddy
-Wed:  Alex   | -
-Thu:  John   | Steph
-
-10-6
-Sun:  Maddy  | Steph
-Mon:  Adam   | Zana
-Tue:  Austin | Alex 		off this week: Zana, Steph
-Wed:  John   | -
-Thu:  Alex   | John
-
-10-13
-Sun:  Zana   | Austin
-Mon:  Steph  | -
-Tue:  Adam   | Zana			off this week: Alex, Austin
-Wed:  Maddy  | -
-Thu:  John   | Steph
-
-10-20
-Sun:  Zana   | Austin
-Mon:  Steph  | John			
-Tue:  Alex   | -			off this week: 
-Wed:  Austin | -
-"""
-
 manual_schedule = """
 Here's next week's schedule!
 
 Day:    Main   |  Side
 _____________________
-10-13
-Sun:  Zana    | Austin
-Mon:  Steph  | -
-Tue:  Adam    | Zana
-Wed:  Maddy | -
-Thu:  John     | Steph
+11-17
+Sun:  Maddy| Zana
+Mon:  Zana  | John
+Tue:  Alex     | Austin
+Wed:  John  | Steph
+Thu:  Austin | -
 """
 
 
 def main():
-	scheduler = Scheduler(start_day= DAYS.TUE.value, start_date=datetime.date(datetime(2019, 10, 15)), num_days=7)
-	add_the_squad(scheduler)
-	scheduler.find_fair()
+	# load schedule from pickle file
+
+
+	# scheduler = Scheduler(start_day=DAYS.TUE.value, start_date=datetime.date(datetime(2019, 11, 17)), num_days=6)
+	# add_the_squad(scheduler)
+	# scheduler.find_fair()
 
 	messenger = Messenger()
-	print(scheduler.string_schedule())
+	# print(scheduler.string_schedule())
 
-	# Google Calendar integration data
-	gcalListOfJson = scheduler.json_schedule()
-	print(gcalListOfJson)
+	# # Google Calendar integration data
+	# gcalListOfJson = scheduler.json_schedule()
+	# print(gcalListOfJson)
 
-	schedule = manual_schedule
+	# schedule = manual_schedule
 
 	""" 
 		ALWAYS send to myself first before sending out, to check formatting and validity. 
@@ -124,13 +95,13 @@ def main():
 	"""
 	for (name, number) in numbers:
 		sleep(1)
-		messenger.send_message(schedule, number)
-		
-		pass		
-		# messenger.send_message('\\(*^ _ ^*)/ \nHello ' + name + ', I am the scheduling bot! Please save my number! Here is the schedule for next week:', number)
+		messenger.send_message("eggo my leggo", number)
+
+		# messenger.send_message(schedule, number)
 		# for json in gcalListOfJson:
 		# 		r = requests.post("https://chef-cal-integration.herokuapp.com/schedule", data = json)
 		# 		print(r.status_code, r.reason)
+		pass
 
 if __name__ == '__main__':
 		main()

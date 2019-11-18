@@ -1,11 +1,12 @@
-from chef import Chef
-from filter import Filter
 import random
 from datetime import timedelta
 import math
 from collections import namedtuple
-from days import DAYS
 import json
+
+from chef import Chef
+from filter import Filter
+from days import DAYS
 
 class w_chef:
 	def __init__(self, weight, chef):
@@ -47,18 +48,12 @@ class Scheduler:
 			self.schedule_three_weeks()
 
 			fairness = self._is_fair(do_print=True)
-			# if fairness[0] == 0:
-			# 	print("Main chef entry order results in fair schedule.\n" + str([chef.name for chef in self.chefs_main]) + "\n")
-			# if fairness[1] == 0:
-			# 	print("Side chef entry order results in fair schedule.\n" + str([chef.name for chef in self.chefs_side]) + "\n")
 			if fairness[0] == 0 and fairness[1] == 0:
-				# self.print_schedule()
 				print("\nSucceeded after " + str(i + 1) + " attempts.\n")
 				return True
 			else:
 				print("could not find fair schedule on attempt " + str(i + 1))
 	
-
 	def schedule_three_weeks(self):
 		for day, sched in enumerate(self.schedule):
 			self._schedule_day(day)
@@ -309,7 +304,6 @@ class Scheduler:
 		return {
 			"Alex": 0,
 			"Zana": 0,
-			"Adam": 0,
 			"John": 0,
 			"Maddy": 0,
 			"Steph": 0,

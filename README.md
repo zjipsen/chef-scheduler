@@ -5,10 +5,10 @@ My friends and I cook dinner almost every night. One of us cooks a main dish, an
 A dynamic scheduling algorithm that takes into account people's differing availability, days that no one is around, and weights to favor people that haven't cooked in a while, is preferrable to signing people up for a consistent day of the week.
 
 Pre-requisites:
-pip install nexmo
+pip3 install requests
 
 Usage:
-python main.py
+python3 main.py
 
 Current behavior:
 - Assign nights based on rudimentary weights system. The person who cooked the longest ago is preferred; if unavailable, the next least-recent chef is selected, and so on.
@@ -18,6 +18,15 @@ Current behavior:
 	2. Roommates are not assigned the same day.
 	3. No chef is assigned to cook two days in a row.
 By uncommenting the other versions of the `roommates` and `yesterday` schedules, conditions 2. and 3. will be allowed, but not unless they are necessary to generate a viable schedule.
+
+REFACTORING PLAN:
+1. Algorithm needs a better way to keep track of the past schedule.
+	Pickle file? 
+	Needs easy conversion to json consumable by Adam's service.
+2. User response: confirm/deny suggested schedule, or input manual schedule.
+3. Fairness then becomes a ratio: how many times has this person cooked out of all nights that there were? Is that above or below the desired average?
+4. Support for "x is on vacation for # weeks"; take them out of the schedule and adjust the fairness ratio accordingly. Since they weren't in town to cook that week, "missing" the week shouldn't be a punishment.
+
 
 Future plans:
 1. (DONE) Don't assign someone both a main and a side on the same day
@@ -30,7 +39,9 @@ Future plans:
 8. (DONE) Allow starting algorithm on a Thursday (or any other day)
 9. (DONE) Two cooks that live in the same apartment shouldn’t cook on the same day
 10. Support people being gone on vacation
-11. Send updates to one shared google calendar that everyone can see?
+11. Send updates to one shared google calendar that everyone can see
 12. (DONE) Attempt to find a fair schedule by randomly shuffling chef entry order until one is found.
-13. Use curl instead of nexmo python package in order to use python3
+13. (DONE) Use curl instead of nexmo python package in order to use python3
 14. Clean up and separate logic
+
+

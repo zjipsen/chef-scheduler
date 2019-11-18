@@ -3,3 +3,5 @@ chef.pyc
 scheduler.pyc
 filter.pyc
 messenger.pyc
+days.pyc
+schedule.pyc
